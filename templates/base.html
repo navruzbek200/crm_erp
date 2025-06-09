@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fashion Store ERP{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-store"></i> Iftixor ERP</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{% url 'erp:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a></li>
+                <li><a href="{% url 'erp:products' %}" class="{% if request.resolver_match.url_name == 'products' %}active{% endif %}">
+                    <i class="fas fa-box"></i> Products
+                </a></li>
+                <li><a href="{% url 'erp:customers' %}" class="{% if request.resolver_match.url_name == 'customers' %}active{% endif %}">
+                    <i class="fas fa-users"></i> Customers
+                </a></li>
+                <li><a href="{% url 'erp:orders' %}" class="{% if request.resolver_match.url_name == 'orders' %}active{% endif %}">
+                    <i class="fas fa-shopping-cart"></i> Orders
+                </a></li>
+                <li><a href="{% url 'erp:inventory' %}" class="{% if request.resolver_match.url_name == 'inventory' %}active{% endif %}">
+                    <i class="fas fa-warehouse"></i> Inventory
+                </a></li>
+                <li><a href="{% url 'erp:suppliers' %}" class="{% if request.resolver_match.url_name == 'suppliers' %}active{% endif %}">
+                    <i class="fas fa-truck"></i> Suppliers
+                </a></li>
+                <li><a href="{% url 'erp:transactions' %}" class="{% if request.resolver_match.url_name == 'transactions' %}active{% endif %}">
+                    <i class="fas fa-money-bill"></i> Transactions
+                </a></li>
+                <li><a href="{% url 'erp:reports' %}" class="{% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+                    <i class="fas fa-chart-bar"></i> Report
+                </a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="sidebar-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <div class="header-right">
+                    <div class="user-menu">
+                        <span>Welcome, {{ user.username }}</span>
+                        <a href="/admin/" class="btn btn-outline">
+                            <i class="fas fa-cog"></i> Admin
+                        </a>
+                        <a href="/admin/logout/" class="btn btn-outline">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="content">
+                {% block content %}
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

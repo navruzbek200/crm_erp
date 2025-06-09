@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Reports - Fashion Store ERP{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Reports & Analytics</h2>
+    <p>Business insights and performance metrics</p>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Monthly Sales Chart -->
+    <div class="card" style="grid-column: span 2;">
+        <div class="card-header">
+            <h3>Monthly Sales Trend</h3>
+        </div>
+        <div class="card-content">
+            <canvas id="salesChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <!-- Top Selling Products -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Top Selling Products</h3>
+        </div>
+        <div class="card-content">
+            {% if top_products %}
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Sold</th>
+                                <th>Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in top_products %}
+                            <tr>
+                                <td>{{ product.product_variant__product__name }}</td>
+                                <td>{{ product.total_sold }}</td>
+                                <td class="amount">${{ product.total_revenue|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No sales data available</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Top Customers -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Top Customers</h3>
+        </div>
+        <div class="card-content">
+            {% if top_customers %}
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Orders</th>
+                                <th>Total Spent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for customer in top_customers %}
+                            <tr>
+                                <td>{{ customer.full_name }}</td>
+                                <td>{{ customer.order_count }}</td>
+                                <td class="amount">${{ customer.total_spent|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No customer data available</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="card" style="grid-column: span 2;">
+        <div class="card-header">
+            <h3>Quick Statistics</h3>
+        </div>
+        <div class="card-content">
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value">{{ top_products|length }}</div>
+                    <div class="metric-label">Products Sold</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">{{ top_customers|length }}</div>
+                    <div class="metric-label">Active Customers</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">
+                        ${% for product in top_products %}{{ product.total_revenue|add:0 }}{% endfor %}
+                    </div>
+                    <div class="metric-label">Total Revenue</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">
+                        {% for product in top_products %}{{ product.total_sold|add:0 }}{% endfor %}
+                    </div>
+                    <div class="metric-label">Items Sold</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sales Chart
+    const ctx = document.getElementById('salesChart');
+    if (ctx) {
+        const salesData = {{ monthly_sales|safe }};
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: salesData.map(item => item.month),
+                datasets: [{
+                    label: 'Monthly Sales',
+                    data: salesData.map(item => item.sales),
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

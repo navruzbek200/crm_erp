@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Dashboard - Fashion Store ERP{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Dashboard</h2>
+    <p>Welcome to your Fashion Store ERP System</p>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Financial Metrics -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Financial Overview</h3>
+        </div>
+        <div class="card-content">
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value">${{ total_sales|floatformat:2|default:0 }}</div>
+                    <div class="metric-label">Total Sales</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">${{ total_expenses|floatformat:2|default:0 }}</div>
+                    <div class="metric-label">Total Expenses</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">${{ total_profit|floatformat:2|default:0 }}</div>
+                    <div class="metric-label">Net Profit</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Statistics -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Order Statistics</h3>
+        </div>
+        <div class="card-content">
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value">{{ total_orders|default:0 }}</div>
+                    <div class="metric-label">Total Orders</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">{{ pending_orders|default:0 }}</div>
+                    <div class="metric-label">Pending Orders</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">{{ completed_orders|default:0 }}</div>
+                    <div class="metric-label">Completed Orders</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Metrics -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Business Overview</h3>
+        </div>
+        <div class="card-content">
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value">{{ total_products|default:0 }}</div>
+                    <div class="metric-label">Total Products</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">{{ total_customers|default:0 }}</div>
+                    <div class="metric-label">Total Customers</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">{{ low_stock_count|default:0 }}</div>
+                    <div class="metric-label">Low Stock Items</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Recent Transactions</h3>
+        </div>
+        <div class="card-content">
+            {% if recent_transactions %}
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in recent_transactions %}
+                            <tr>
+                                <td>
+                                    <span class="badge badge-{{ transaction.transaction_type }}">
+                                        {{ transaction.get_transaction_type_display }}
+                                    </span>
+                                </td>
+                                <td class="amount">${{ transaction.amount|floatformat:2 }}</td>
+                                <td>{{ transaction.description }}</td>
+                                <td>{{ transaction.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No recent transactions</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Low Stock Alerts -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Low Stock Alerts</h3>
+        </div>
+        <div class="card-content">
+            {% if low_stock_items %}
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Variant</th>
+                                <th>Current Stock</th>
+                                <th>Min Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in low_stock_items %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>{{ item.size }} - {{ item.color }}</td>
+                                <td class="text-danger">{{ item.stock_quantity }}</td>
+                                <td>{{ item.min_stock_level }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No low stock alerts</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

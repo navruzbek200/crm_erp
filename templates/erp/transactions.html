@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Transactions - Fashion Store ERP{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Transactions</h2>
+    <div class="page-actions">
+        <a href="/admin/erp/transaction/add/" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Add Transaction
+        </a>
+    </div>
+</div>
+
+<div class="filters">
+    <form method="get" class="filter-form">
+        <div class="filter-group">
+            <label>Search</label>
+            <input type="text" name="search" value="{{ search }}" placeholder="Search transactions...">
+        </div>
+        <div class="filter-group">
+            <label>Type</label>
+            <select name="type">
+                <option value="">All Types</option>
+                {% for type_code, type_name in transaction_types %}
+                <option value="{{ type_code }}" {% if selected_type == type_code %}selected{% endif %}>
+                    {{ type_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-content">
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Reference</th>
+                        <th>Order</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>
+                            <span class="badge badge-{{ transaction.transaction_type }}">
+                                {{ transaction.get_transaction_type_display }}
+                            </span>
+                        </td>
+                        <td class="amount">${{ transaction.amount|floatformat:2 }}</td>
+                        <td>{{ transaction.description }}</td>
+                        <td>{{ transaction.reference|default:"-" }}</td>
+                        <td>
+                            {% if transaction.order %}
+                                <a href="/admin/erp/order/{{ transaction.order.id }}/change/">
+                                    {{ transaction.order.order_number }}
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ transaction.created_at|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="/admin/erp/transaction/{{ transaction.id }}/change/" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No transactions found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

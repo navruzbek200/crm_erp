@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Inventory - Fashion Store ERP{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Inventory</h2>
+    <div class="page-actions">
+        <a href="/admin/erp/productvariant/add/" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Add Variant
+        </a>
+    </div>
+</div>
+
+<div class="filters">
+    <form method="get" class="filter-form">
+        <div class="filter-group">
+            <label>Search</label>
+            <input type="text" name="search" value="{{ search }}" placeholder="Search inventory...">
+        </div>
+        <div class="filter-group">
+            <label>Low Stock</label>
+            <select name="low_stock">
+                <option value="">All Items</option>
+                <option value="1" {% if low_stock_filter %}selected{% endif %}>Low Stock Only</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-content">
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>SKU</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Stock</th>
+                        <th>Min Level</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for variant in variants %}
+                    <tr>
+                        <td>{{ variant.product.name }}</td>
+                        <td>{{ variant.product.sku }}</td>
+                        <td>{{ variant.size.name }}</td>
+                        <td>{{ variant.color.name }}</td>
+                        <td>{{ variant.stock_quantity }}</td>
+                        <td>{{ variant.min_stock_level }}</td>
+                        <td>
+                            {% if variant.is_low_stock %}
+                                <span class="badge badge-danger">Low Stock</span>
+                            {% else %}
+                                <span class="badge badge-success">In Stock</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="/admin/erp/productvariant/{{ variant.id }}/change/" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center">No inventory items found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
